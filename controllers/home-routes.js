@@ -36,7 +36,7 @@ router.get("/", (req, res) => {
     .then((dbPostData) => {
       const posts = dbPostData.map((post) => post.get({ plain: true }));
       // pass a single post object into the homepage template
-      res.render("homepage", { posts, loggedIn: req.session.loggedIn, loggedOut: !req.session.loggedIn });
+      res.render("homepage", { posts, loggedIn: req.session.loggedIn });
     })
     .catch((err) => {
       console.log(err);
@@ -56,33 +56,38 @@ router.get("/login", (req, res) => {
 router.get("/posts/:id", (req, res) => {
   Post.findOne({
     where: {
-      id: req.params.id
+      id: req.params.id,
     },
     attributes: [
-      'id',
-      'post_url',
-      'title',
-      'created_at',
-      [sequelize.literal('(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+      "id",
+      "post_url",
+      "title",
+      "created_at",
+      [
+        sequelize.literal(
+          "(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)"
+        ),
+        "vote_count",
+      ],
     ],
     include: [
       {
         model: Comment,
-        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+        attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
         include: {
           model: User,
-          attributes: ['username']
-        }
+          attributes: ["username"],
+        },
       },
       {
         model: User,
-        attributes: ['username']
-      }
-    ]
+        attributes: ["username"],
+      },
+    ],
   })
-    .then(dbPostData => {
+    .then((dbPostData) => {
       if (!dbPostData) {
-        res.status(404).json({ message: 'No post found with provided id!' });
+        res.status(404).json({ message: "No post found with provided id!" });
         return;
       }
 
@@ -90,9 +95,9 @@ router.get("/posts/:id", (req, res) => {
       const post = dbPostData.get({ plain: true });
 
       // pass data to template
-      res.render('single-post', { post, loggedIn: req.session.loggedIn });
+      res.render("single-post", { post, loggedIn: req.session.loggedIn });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       res.status(500).json(err);
     });
