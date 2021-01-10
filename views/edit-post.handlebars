@@ -5,7 +5,7 @@
   </h2>
   <form class="edit-post-form">
     <div>
-      <input type="text" name="text" value="{{post.title}}" />
+      <input type="text" name="post-title" value="{{post.title}}" />
       <span>({{format_url post.post_url}})</span>
     </div>
     <div>
@@ -26,4 +26,9 @@
     <button type="submit">add comment</button>
   </div>
 </form>
+
 {{> comments posts.comments}}
+
+<script src="/javascript/edit-post.js"></script>
+<script src="/javascript/delete-post.js"></script>
+<script src="/javascript/comment.js"></script>
